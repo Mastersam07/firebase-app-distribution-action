@@ -1,19 +1,18 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
-
-# Define your inputs here.
+name: 'Firebase App Distribution Upload'
+description: 'Uploads an artifact to Firebase App Distribution'
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  serviceCredentialsFileContent:
+    description: 'Service account key JSON content for Firebase authentication'
     required: true
-    default: '1000'
-
-# Define your outputs here.
-outputs:
-  time:
-    description: 'Your output description here'
-
+  appId:
+    description: 'The app ID of your Firebase app'
+    required: true
+  file:
+    description: 'Path to the artifact file to upload'
+    required: true
+  groups:
+    description: 'Distribution groups to distribute the artifact to'
+    required: false
 runs:
   using: node20
-  main: dist/index.js
+  main: 'dist/index.js'
