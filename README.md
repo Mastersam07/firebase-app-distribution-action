@@ -1,34 +1,65 @@
-# Create a JavaScript Action
+# Firebase App Distribution GitHub Action
 
-[![GitHub Super-Linter](https://github.com/actions/javascript-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
-![CI](https://github.com/actions/javascript-action/actions/workflows/ci.yml/badge.svg)
+This GitHub Action uploads an artifact to Firebase App Distribution and optionally distributes it to specified groups.
 
-Use this template to bootstrap the creation of a JavaScript action. :rocket:
+[![GitHub Super-Linter](https://github.com/mastersam07/firebase-app-distribution-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
+![Coverage](https://raw.githubusercontent.com/mastersam07/firebase-app-distribution-action/master/badges/coverage.svg)
 
-This template includes compilation support, tests, a validation workflow,
-publishing, and versioning guidance.
+## Inputs
 
-If you are new, there's also a simpler introduction in the
-[Hello world JavaScript action repository](https://github.com/actions/hello-world-javascript-action).
+- `serviceCredentialsFileContent`: **Required**. The JSON content of the Firebase service account key used for authentication.
+- `appId`: **Required**. The Firebase App ID to which the artifact will be uploaded.
+- `file`: **Required**. The path to the artifact file (e.g., APK or IPA) you want to upload.
+- `groups`: Optional. A comma-separated list of distribution group aliases to which the artifact will be distributed.
 
-## Create Your Own Action
+## Outputs
 
-To create your own action, you can use this repository as a template! Just
-follow the below instructions:
+- `releaseName`: The name of the release created in Firebase App Distribution.
 
-1. Click the **Use this template** button at the top of the repository
-1. Select **Create a new repository**
-1. Select an owner and name for your new repository
-1. Click **Create repository**
-1. Clone your new repository
+## Usage
 
-> [!IMPORTANT]
->
-> Make sure to remove or update the [`CODEOWNERS`](./CODEOWNERS) file! For
-> details on how to use this file, see
-> [About code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners).
+To use this action in your workflow, follow these steps:
 
-## Initial Setup
+1. **Prepare your Firebase Service Account Key:**
+   - Go to the [Firebase Console](https://console.firebase.google.com/).
+   - Select your project and go to Project settings > Service accounts.
+   - Generate a new private key and save the JSON file.
+
+2. **Add your Service Account Key to GitHub Secrets:**
+   - Go to your GitHub repository's Settings > Secrets.
+   - Add a new secret containing the entire JSON content of the Firebase service account key file. Name it something like `FIREBASE_SERVICE_ACCOUNT_KEY`.
+
+3. **Configure the Workflow:**
+   - In your repository, create a `.github/workflows` directory if it doesn't exist.
+   - Create a new YAML file for your workflow (e.g., `.github/workflows/firebase-distribution.yml`).
+
+4. **Add the Workflow Configuration:**
+
+```yaml
+name: Distribute App via Firebase
+
+on:
+  push:
+    branches:
+      - main  # Or any other branch from which you want to distribute builds
+
+jobs:
+  firebase_distribution:
+    runs-on: ubuntu-latest  # Can be any supported runner
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Upload and Distribute App
+        uses: mastersam07/firebase-app-distribution-action@v0.1
+        with:
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          file: '<path-to-your-artifact>'  # e.g., './build/app/outputs/flutter-apk/app-release.apk'
+          groups: 'testers,qa'  # Optional: distribution groups
+```
+
+## Contributing/Initial Setup
 
 After you've cloned the repository to your local machine or codespace, you'll
 need to perform some initial setup steps before you can develop your action.
@@ -59,147 +90,10 @@ need to perform some initial setup steps before you can develop your action.
    ```bash
    $ npm test
 
-   PASS  ./index.test.js
-     ✓ throws invalid number (3ms)
-     ✓ wait 500 ms (504ms)
-     ✓ test runs (95ms)
+   PASS  __tests__/index.test.js
+    Firebase App Distribution Action
+      ✓ uploads a file successfully (2 ms)
+      ✓ handles upload failure
 
    ...
    ```
-
-## Update the Action Metadata
-
-The [`action.yml`](action.yml) file defines metadata about your action, such as
-input(s) and output(s). For details about this file, see
-[Metadata syntax for GitHub Actions](https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions).
-
-When you copy this repository, update `action.yml` with the name, description,
-inputs, and outputs for your action.
-
-## Update the Action Code
-
-The [`src/`](./src/) directory is the heart of your action! This contains the
-source code that will be run when your action is invoked. You can replace the
-contents of this directory with your own code.
-
-There are a few things to keep in mind when writing your action code:
-
-- Most GitHub Actions toolkit and CI/CD operations are processed asynchronously.
-  In `main.js`, you will see that the action is run in an `async` function.
-
-  ```javascript
-  const core = require('@actions/core')
-  //...
-
-  async function run() {
-    try {
-      //...
-    } catch (error) {
-      core.setFailed(error.message)
-    }
-  }
-  ```
-
-  For more information about the GitHub Actions toolkit, see the
-  [documentation](https://github.com/actions/toolkit/blob/master/README.md).
-
-So, what are you waiting for? Go ahead and start customizing your action!
-
-1. Create a new branch
-
-   ```bash
-   git checkout -b releases/v1
-   ```
-
-1. Replace the contents of `src/` with your action code
-1. Add tests to `__tests__/` for your source code
-1. Format, test, and build the action
-
-   ```bash
-   npm run all
-   ```
-
-   > [!WARNING]
-   >
-   > This step is important! It will run [`ncc`](https://github.com/vercel/ncc)
-   > to build the final JavaScript action code with all dependencies included.
-   > If you do not run this step, your action will not work correctly when it is
-   > used in a workflow. This step also includes the `--license` option for
-   > `ncc`, which will create a license file for all of the production node
-   > modules used in your project.
-
-1. Commit your changes
-
-   ```bash
-   git add .
-   git commit -m "My first action is ready!"
-   ```
-
-1. Push them to your repository
-
-   ```bash
-   git push -u origin releases/v1
-   ```
-
-1. Create a pull request and get feedback on your action
-1. Merge the pull request into the `main` branch
-
-Your action is now published! :rocket:
-
-For information about versioning your action, see
-[Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-in the GitHub Actions toolkit.
-
-## Validate the Action
-
-You can now validate the action by referencing it in a workflow file. For
-example, [`ci.yml`](./.github/workflows/ci.yml) demonstrates how to reference an
-action in the same repository.
-
-```yaml
-steps:
-  - name: Checkout
-    id: checkout
-    uses: actions/checkout@v3
-
-  - name: Test Local Action
-    id: test-action
-    uses: ./
-    with:
-      milliseconds: 1000
-
-  - name: Print Output
-    id: output
-    run: echo "${{ steps.test-action.outputs.time }}"
-```
-
-For example workflow runs, check out the
-[Actions tab](https://github.com/actions/javascript-action/actions)! :rocket:
-
-## Usage
-
-After testing, you can create version tag(s) that developers can use to
-reference different stable versions of your action. For more information, see
-[Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-in the GitHub Actions toolkit.
-
-To include the action in a workflow in another repository, you can use the
-`uses` syntax with the `@` symbol to reference a specific branch, tag, or commit
-hash.
-
-```yaml
-steps:
-  - name: Checkout
-    id: checkout
-    uses: actions/checkout@v4
-
-  - name: Run my Action
-    id: run-action
-    uses: actions/javascript-action@v1 # Commit with the `v1` tag
-    with:
-      milliseconds: 1000
-
-  - name: Print Output
-    id: output
-    run: echo "${{ steps.run-action.outputs.time }}"
-```
