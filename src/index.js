@@ -6,6 +6,7 @@ const axios = require('axios')
 const fs = require('fs')
 const path = require('path')
 const { GoogleAuth } = require('google-auth-library')
+const FormData = require('form-data')
 
 async function run() {
   try {
@@ -37,12 +38,15 @@ async function run() {
     const uploadUrl = `https://firebaseappdistribution.googleapis.com/v1/projects/${serviceAccountKey.project_id}/apps/${appId}/releases:upload`
 
     const formData = new FormData()
-    formData.append('file', fs.createReadStream(filePath), fileName)
+    formData.append('file', fs.createReadStream(filePath), {
+      filename: fileName,
+      contentType: 'application/octet-stream'
+    })
 
     const uploadResponse = await axios.post(uploadUrl, formData, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'multipart/form-data'
+        ...formData.getHeaders()
       },
       maxContentLength: Infinity,
       maxBodyLength: Infinity
@@ -74,4 +78,7 @@ async function run() {
   }
 }
 
-run()
+// Export the run function to make it available for import
+module.exports = {
+  run
+}
