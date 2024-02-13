@@ -1,4 +1,4 @@
-name: 'Firebase App Distribution'
+name: 'Firebase App Distribution Upload'
 description: 'Uploads an artifact to Firebase App Distribution'
 author: 'Samuel Abada <@mastersam07>'
 branding:
