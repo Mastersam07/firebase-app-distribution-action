@@ -1,5 +1,9 @@
 name: 'Firebase App Distribution Upload'
 description: 'Uploads an artifact to Firebase App Distribution'
+author: 'Samuel Abada <@mastersam07>'
+branding:
+  color: 'orange'
+  icon: 'upload-cloud'
 inputs:
   serviceCredentialsFileContent:
     description: 'Service account key JSON content for Firebase authentication'
