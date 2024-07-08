@@ -16,6 +16,9 @@ inputs:
     required: true
   groups:
     description: 'Distribution groups to distribute the artifact to'
+    required: false    
+  releaseNotes:
+    description: 'Release notes for the uploaded artifact'
     required: false
 runs:
   using: node20

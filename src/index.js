@@ -16,6 +16,8 @@ async function run() {
     const appId = core.getInput('appId', { required: true })
     const file = core.getInput('file', { required: true })
     const groups = core.getInput('groups')
+    const releaseNotes =
+      core.getInput('releaseNotes') || 'Distributed via GitHub Actions'
 
     const serviceAccountKey = JSON.parse(serviceCredentials)
     const auth = new GoogleAuth({
@@ -35,7 +37,7 @@ async function run() {
     }
 
     // Adjusted upload URL
-    const uploadUrl = `https://firebaseappdistribution.googleapis.com/v1/projects/${serviceAccountKey.project_id}/apps/${appId}/releases:upload`
+    const uploadUrl = `https://firebaseappdistribution.googleapis.com/upload/v1/projects/${serviceAccountKey.project_id}/apps/${appId}/releases:upload`
 
     const formData = new FormData()
     formData.append('file', fs.createReadStream(filePath), {
@@ -63,7 +65,7 @@ async function run() {
         {
           groupNames: groups.split(','),
           releaseNotes: {
-            text: 'Distributed via GitHub Actions'
+            text: releaseNotes
           }
         },
         {
