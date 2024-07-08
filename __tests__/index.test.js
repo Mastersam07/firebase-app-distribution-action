@@ -83,6 +83,8 @@ describe('Firebase App Distribution Action', () => {
           return 'path/to/app.apk'
         case 'groups':
           return 'testers'
+        case 'releaseNotes':
+          return 'Distributed via GitHub Actions'
         default:
           return ''
       }
