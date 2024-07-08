@@ -35,7 +35,7 @@ async function run() {
     }
 
     // Adjusted upload URL
-    const uploadUrl = `https://firebaseappdistribution.googleapis.com/v1/projects/${serviceAccountKey.project_id}/apps/${appId}/releases:upload`
+    const uploadUrl = `https://firebaseappdistribution.googleapis.com/upload/v1/projects/${serviceAccountKey.project_id}/apps/${appId}/releases:upload`
 
     const formData = new FormData()
     formData.append('file', fs.createReadStream(filePath), {
