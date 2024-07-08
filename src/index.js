@@ -16,8 +16,9 @@ async function run() {
     const appId = core.getInput('appId', { required: true })
     const file = core.getInput('file', { required: true })
     const groups = core.getInput('groups')
-    const releaseNotes = core.getInput('releaseNotes') || 'Distributed via GitHub Actions'
- 
+    const releaseNotes =
+      core.getInput('releaseNotes') || 'Distributed via GitHub Actions'
+
     const serviceAccountKey = JSON.parse(serviceCredentials)
     const auth = new GoogleAuth({
       credentials: serviceAccountKey,
